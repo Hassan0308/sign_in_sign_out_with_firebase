@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:sign_in_sign_out_with_firebase/screens/home.dart';
 import 'package:sign_in_sign_out_with_firebase/screens/register.dart';
 import 'package:sign_in_sign_out_with_firebase/utils/vertical_horizontal_space.dart';
@@ -46,6 +47,7 @@ if(!RegExp("^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+.[a-z]").hasMatch(value)){
 return ("Please Enter A Valid Email");
 
 }
+return null;
 
 },
 
@@ -75,9 +77,16 @@ autofocus: false,
 obscureText: true,
 controller: passwordController,
 
-// validator: (){
+validator: (value){
+  RegExp regExp=new RegExp(r'^.{6,}$');
+  if(value!.isEmpty){
 
-// },
+    return ("Please Enter A Password");
+  }
+if(!regExp.hasMatch(value)){
+  return ("Please Enter A Valid Password (Min 6 characters)");
+}
+},
 
 onSaved: (value){
   passwordController.text= value!;
@@ -114,7 +123,7 @@ child: MaterialButton(
   
   onPressed:() {
   
-  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Home(),));
+  login(emailController.text, passwordController.text);
 },
 child: Text("Login" , 
 textAlign: TextAlign.center,
@@ -200,4 +209,27 @@ child: Text("Sign up", style: TextStyle(fontWeight: FontWeight.bold, color: Colo
 
     );
   }
+//login function
+
+void login(String email , String pass) async{
+
+
+//in order to validate form key
+  if(formkey.currentState!.validate()){
+
+await _auth.signInWithEmailAndPassword(email: email, password: pass).then((uid) => {
+
+Fluttertoast.showToast(msg: "Login Successfull"),
+Navigator.of(context).pushReplacement(MaterialPageRoute(builder:  (context) => Home(),))
+
+}).catchError((e){
+  Fluttertoast.showToast(msg: e!.message);
+  
+});
+    
+  }
 }
+
+}
+
+
