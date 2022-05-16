@@ -1,9 +1,13 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:sign_in_sign_out_with_firebase/screens/home.dart';
 import 'package:sign_in_sign_out_with_firebase/screens/login.dart';
 import 'package:sign_in_sign_out_with_firebase/screens/register.dart';
 
-void main() {
+Future<void> main() async{
+
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(const MyApp());
 }
 

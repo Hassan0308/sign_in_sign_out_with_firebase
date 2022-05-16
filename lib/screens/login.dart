@@ -34,6 +34,8 @@ class _Login_screenState extends State<Login_screen> {
 autofocus: false,
 controller: emailController,
 keyboardType: TextInputType.emailAddress,
+
+
 validator: (value){
 if(value!.isEmpty)
 {

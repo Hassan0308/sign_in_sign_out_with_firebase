@@ -1,4 +1,11 @@
+import 'dart:math';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:sign_in_sign_out_with_firebase/models/user-model.dart';
+import 'package:sign_in_sign_out_with_firebase/screens/home.dart';
 import 'package:sign_in_sign_out_with_firebase/utils/vertical_horizontal_space.dart';
 
 class RegistrationScreen extends StatefulWidget {
@@ -9,6 +16,9 @@ class RegistrationScreen extends StatefulWidget {
 }
 
 class _RegistrationScreenState extends State<RegistrationScreen> {
+  //firbase auth
+
+  final _auth = FirebaseAuth.instance;
 
   //form auth key
   final formkey = GlobalKey<FormState>();
@@ -32,9 +42,17 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
 autofocus: false,
 controller: FnameController,
 keyboardType: TextInputType.name,
-// validator: (){
+validator: (value){
+  RegExp regExp=new RegExp(r'^.{3,}$');
+  if(value!.isEmpty){
 
-// },
+    return ("Please Enter A First Name");
+  }
+if(!regExp.hasMatch(value)){
+  return ("Please Enter A Valid Name (Min 3 characters)");
+}
+return null;
+},
 
 onSaved: (value){
   FnameController.text= value!;
@@ -62,9 +80,15 @@ textInputAction: TextInputAction.next,
 autofocus: false,
 controller: LnameController,
 keyboardType: TextInputType.name,
-// validator: (){
+validator: (value){
+ 
+  if(value!.isEmpty){
 
-// },
+    return ("Please Enter A Second Name");
+  }
+
+},
+
 
 onSaved: (value){
   LnameController.text= value!;
@@ -90,9 +114,23 @@ textInputAction: TextInputAction.next,
 autofocus: false,
 controller: emailController,
 keyboardType: TextInputType.emailAddress,
-// validator: (){
 
-// },
+validator: (value){
+if(value!.isEmpty)
+{
+  return ("Please Enter Your Email");
+}
+
+//reg expresson for email validation
+
+if(!RegExp("^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+.[a-z]").hasMatch(value)){
+
+return ("Please Enter A Valid Email");
+
+}
+return null;
+
+},
 
 onSaved: (value){
   emailController.text= value!;
@@ -122,9 +160,16 @@ autofocus: false,
 obscureText: true,
 controller: passController,
 
-// validator: (){
+validator: (value){
+  RegExp regExp=new RegExp(r'^.{6,}$');
+  if(value!.isEmpty){
 
-// },
+    return ("Please Enter A Password");
+  }
+if(!regExp.hasMatch(value)){
+  return ("Please Enter A Valid Password (Min 6 characters)");
+}
+},
 
 onSaved: (value){
   passController.text= value!;
@@ -154,9 +199,15 @@ autofocus: false,
 obscureText: true,
 controller: confirmPassController,
 
-// validator: (){
+validator: (Value){
 
-// },
+  if(confirmPassController.text != passController.text){
+
+    return "Password don't match";
+  }
+  return null;
+
+},
 
 onSaved: (value){
   confirmPassController.text= value!;
@@ -190,6 +241,8 @@ child: MaterialButton(
   minWidth: MediaQuery.of(context).size.width,
   
   onPressed:() {
+
+    register(emailController.text, passController.text);
   
 },
 child: Text("Login" , 
@@ -257,4 +310,53 @@ child: Form(
 )
     );
   }
+
+
+
+void register(String email , String password) async{
+
+  if(formkey.currentState!.validate()){
+
+    await _auth.createUserWithEmailAndPassword(email: email, password: password).then((value) => {
+
+      postDetailToFirestore(),
+
+
+    }).catchError((e){
+
+      Fluttertoast.showToast(msg: e!.message);
+
+    })
+;}}
+
+ postDetailToFirestore() async{
+
+  //calling our firestore
+  //calling our user model
+  //sending these values
+
+  FirebaseFirestore firebaseFirestore=FirebaseFirestore.instance;
+  User? user = _auth.currentUser;
+
+   //calling our user model
+
+   userModel usermodel = userModel();
+//writing all the values
+
+usermodel.email=user!.email;
+usermodel.uid = user.uid;
+usermodel.firstName= FnameController.text;
+usermodel.secondName = LnameController.text;
+
+   
+
+await firebaseFirestore.collection('Registration').doc(user.uid).set(usermodel.toMap());
+Fluttertoast.showToast(msg: "Account Created Successfully!");
+
+Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=> Home() ), (route) => false);
+
 }
+
+  }
+
+
