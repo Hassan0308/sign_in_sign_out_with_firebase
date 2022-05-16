@@ -1,7 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:sign_in_sign_out_with_firebase/screens/login.dart';
 import 'package:sign_in_sign_out_with_firebase/screens/register.dart';
 import 'package:sign_in_sign_out_with_firebase/utils/vertical_horizontal_space.dart';
+
+import '../models/user-model.dart';
 
 
 class Home extends StatefulWidget {
@@ -12,6 +16,24 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+   //firbase auth
+
+  User? user = FirebaseAuth.instance.currentUser;
+    //calling our user model
+
+   userModel usermodel = userModel();
+
+   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+
+    FirebaseFirestore.instance.collection('Registration').doc(usermodel.uid).get().then((value) => this.usermodel=userModel.fromMap(value.data()));
+    setState(() {
+      
+    });
+  }
+
   @override
 
   
@@ -42,11 +64,15 @@ class _HomeState extends State<Home> {
 
   ),),
   addVerticalSpace(10),
-  Text("Muhammad Hassan Kareem"),
-  Text("Programmingwithhassan@gmail.com"),
+  Text("${usermodel.firstName} ${usermodel.secondName}"),
+  Text("${usermodel.email}"),
 
   addHorizontalSpace(20),
-ActionChip(label: Text("Logout"), onPressed: (){})
+ActionChip(label: Text("Logout"), onPressed: (){
+
+logout(context);
+
+})
 
 
 
@@ -55,5 +81,14 @@ ActionChip(label: Text("Logout"), onPressed: (){})
           ),
         ) ),
     );
+  }
+
+
+//function to loutout
+
+  Future<void> logout(BuildContext context)async{
+
+    await FirebaseAuth.instance.signOut();
+    Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context)=> Login_screen()));
   }
 }
