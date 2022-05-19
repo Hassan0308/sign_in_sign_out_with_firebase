@@ -21,16 +21,18 @@ class _HomeState extends State<Home> {
   User? user = FirebaseAuth.instance.currentUser;
     //calling our user model
 
-   userModel usermodel = userModel();
+   userModel loginUser = userModel();
 
-   @override
+ @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-
-    FirebaseFirestore.instance.collection('Registration').doc(usermodel.uid).get().then((value) => this.usermodel=userModel.fromMap(value.data()));
-    setState(() {
-      
+    FirebaseFirestore.instance
+        .collection("Registration")
+        .doc(user!.uid)
+        .get()
+        .then((value) {
+      this.loginUser = userModel.fromMap(value.data());
+      setState(() {});
     });
   }
 
@@ -40,7 +42,7 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
 
     return Scaffold(
-      appBar: AppBar(title: Text("Welcome" ), centerTitle: true,),
+      appBar: _appBar(),
 
       body: Center(
         
@@ -64,8 +66,8 @@ class _HomeState extends State<Home> {
 
   ),),
   addVerticalSpace(10),
-  Text("${usermodel.firstName} ${usermodel.secondName}"),
-  Text("${usermodel.email}"),
+  Text("${loginUser.firstName} ${loginUser.secondName}"),
+  Text("${loginUser.email}"),
 
   addHorizontalSpace(20),
 ActionChip(label: Text("Logout"), onPressed: (){
@@ -90,5 +92,35 @@ logout(context);
 
     await FirebaseAuth.instance.signOut();
     Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context)=> Login_screen()));
+  }
+
+
+  //custom AppBar
+  _appBar(){
+//getting the size of appBar
+// we will get the height
+
+final appBarHeight = AppBar().preferredSize.height;
+return PreferredSize(
+
+preferredSize: Size.fromHeight(appBarHeight) ,
+child: AppBar(title: const Text("Profile"),
+actions: [
+  IconButton(onPressed: (){
+
+logout(context);
+
+  }, icon: Icon(Icons.logout)),
+  
+
+  
+],
+
+
+),
+
+
+);
+
   }
 }

@@ -316,6 +316,7 @@ child: Form(
 void register(String email , String password) async{
 
   if(formkey.currentState!.validate()){
+    
 
     await _auth.createUserWithEmailAndPassword(email: email, password: password).then((value) => {
 
