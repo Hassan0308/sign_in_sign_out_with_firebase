@@ -354,7 +354,7 @@ usermodel.secondName = LnameController.text;
 await firebaseFirestore.collection('Registration').doc(user.uid).set(usermodel.toMap());
 Fluttertoast.showToast(msg: "Account Created Successfully!");
 
-Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=> Home() ), (route) => false);
+Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=> const Home() ), (route) => false);
 
 }
 

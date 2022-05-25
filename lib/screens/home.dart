@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:sign_in_sign_out_with_firebase/imageUpload/imageUpload.dart';
+import 'package:sign_in_sign_out_with_firebase/imageUpload/showImage.dart';
 import 'package:sign_in_sign_out_with_firebase/screens/login.dart';
 import 'package:sign_in_sign_out_with_firebase/screens/register.dart';
 import 'package:sign_in_sign_out_with_firebase/utils/vertical_horizontal_space.dart';
@@ -67,14 +69,35 @@ class _HomeState extends State<Home> {
   ),),
   addVerticalSpace(10),
   Text("${loginUser.firstName} ${loginUser.secondName}"),
+   addVerticalSpace(10),
   Text("${loginUser.email}"),
+   addVerticalSpace(10),
+    Text("${loginUser.uid}"),
+     addVerticalSpace(10),
 
-  addHorizontalSpace(20),
-ActionChip(label: Text("Logout"), onPressed: (){
+ 
 
-logout(context);
+  ElevatedButton(onPressed: (){
+Navigator.push(context, MaterialPageRoute(builder: ((context) => const ImageUpload())));
 
-})
+
+  }, child: Text("Upload an image")),
+  ElevatedButton(onPressed: (){
+
+Navigator.push(context, MaterialPageRoute(builder: ((context) => const showUpload())));
+
+
+  }, child: Text("Show")),
+
+
+
+
+
+// ActionChip(label: Text("Logout"), onPressed: (){
+
+// logout(context);
+
+// })
 
 
 
