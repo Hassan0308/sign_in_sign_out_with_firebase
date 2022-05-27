@@ -78,13 +78,13 @@ class _HomeState extends State<Home> {
  
 
   ElevatedButton(onPressed: (){
-Navigator.push(context, MaterialPageRoute(builder: ((context) => const ImageUpload())));
+Navigator.push(context, MaterialPageRoute(builder: ((context) =>  ImageUpload(userId: loginUser.uid))));
 
 
   }, child: Text("Upload an image")),
   ElevatedButton(onPressed: (){
 
-Navigator.push(context, MaterialPageRoute(builder: ((context) => const showUpload())));
+Navigator.push(context, MaterialPageRoute(builder: ((context) => showUpload(userid: loginUser.uid))));
 
 
   }, child: Text("Show")),

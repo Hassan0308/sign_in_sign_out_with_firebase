@@ -13,7 +13,11 @@ import 'package:sign_in_sign_out_with_firebase/utils/vertical_horizontal_space.d
 
 
 class ImageUpload extends StatefulWidget {
-  const ImageUpload({Key? key}) : super(key: key);
+
+  //we need the user id to create a image folder for particular user
+
+  String? userId;
+  ImageUpload({Key? key, this.userId}) : super(key: key);
 
   @override
   State<ImageUpload> createState() => _ImageUploadState();
@@ -24,6 +28,8 @@ class _ImageUploadState extends State<ImageUpload> {
   //some initializing code
 File? _image;
 final imagePicker = ImagePicker();
+String? downloadUrl;
+
 
 //Image Picker Methods
 Future ImagePickerMethd ()async{
@@ -48,6 +54,22 @@ showSnackBar(String snacktext, Duration d){
   
   final snackbar=SnackBar(content: Text(snacktext), duration: d,);
   ScaffoldMessenger.of(context).showSnackBar(snackbar);
+
+}
+
+//uploading an image then getting the download url and then
+//adding that download url to our cloudfirestore
+
+Future uploadImage()async{
+  final postid=DateTime.now().millisecondsSinceEpoch.toString();
+  FirebaseFirestore firebaseFirestore=FirebaseFirestore.instance;
+
+Reference ref = FirebaseStorage.instance.ref().child("${widget.userId}/images").child("post_id$postid");
+await ref.putFile(_image!);
+downloadUrl= await ref.getDownloadURL();
+// uploading URL to firebase
+firebaseFirestore.collection("Registration").doc(widget.userId).collection("images").add({'downloadURL' :  downloadUrl}).whenComplete(() => showSnackBar("Image Uploaded Sucessfullt", Duration(milliseconds: 500)));
+
 
 }
 
@@ -91,7 +113,18 @@ ElevatedButton(onPressed: (){
 ImagePickerMethd();
 
 }, child: Text("Select Image")),
-ElevatedButton(onPressed: (){}, child: Text("Upload Image")),
+ElevatedButton(onPressed: (){
+
+if(_image!=null){
+
+
+uploadImage();}
+else{
+
+  showSnackBar("No Image Selected!", Duration(milliseconds: 500));
+}
+
+}, child: Text("Upload Image")),
 
       ],
     )),
